@@ -1,0 +1,16 @@
+# 虚拟环境与打包产物
+.venv/
+build/
+dist/
+*.spec
+
+# 运行期产物：编辑输出、日志、OCR 缓存
+out/
+*.log
+**/__pycache__/
+*.py[cod]
+
+# 编辑器 / 工具目录
+.zcode/
+.idea/
+.vscode/

@@ -1,0 +1,20 @@
+[project]
+name = "pdfbox"
+version = "0.0.1"
+description = "PDF 工具箱 —— 结构模型驱动的 PDF 编辑器"
+requires-python = ">=3.11"
+
+dependencies = [
+    "PyMuPDF>=1.28",
+    "fontTools>=4.60",
+    "numpy>=2.0",
+    "Pillow>=11.0",
+]
+
+[project.optional-dependencies]
+ui = ["PySide6>=6.8"]
+ocr = ["rapidocr-onnxruntime"]
+convert = ["pdf2docx", "python-docx", "pikepdf"]
+
+[tool.setuptools.packages.find]
+include = ["spike*", "pdfbox*"]
