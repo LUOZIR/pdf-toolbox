@@ -65,8 +65,8 @@ class DiffResult:
                 f"{r['pixels']} px"
             )
         lines.append("")
-        lines.append("✅ 通过：未改动区域零差异" if self.clean
-                     else f"❌ 不通过：期望区域外有 {self.outside_pixels} 个像素发生变化")
+        lines.append("[通过] 通过：未改动区域零差异" if self.clean
+                     else f"[失败] 不通过：期望区域外有 {self.outside_pixels} 个像素发生变化")
         return "\n".join(lines)
 
 
@@ -236,8 +236,8 @@ class FixedLayerCheck:
 
     def report(self) -> str:
         if self.ok:
-            return f"✅ 固定层完好：{len(self.original)} 个元素的位置/方向/字号/颜色全部一致"
-        lines = ["❌ 固定层受损："]
+            return f"[通过] 固定层完好：{len(self.original)} 个元素的位置/方向/字号/颜色全部一致"
+        lines = ["[失败] 固定层受损："]
         orig_set = {s[0]: s for s in self.original}
         res_set = {s[0]: s for s in self.result}
         for text in orig_set:

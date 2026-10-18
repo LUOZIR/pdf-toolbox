@@ -1,4 +1,4 @@
-"""格式转换：PDF ↔ Word / Excel / PPT / 图片。
+"""格式转换：PDF <-> Word / Excel / PPT / 图片。
 
 ★ 转换方向决定用哪条路，因为两个方向的"最佳做法"完全不同：
 
@@ -66,7 +66,7 @@ class ConvertReport:
         for d in self.detail:
             L.append(f"  {d}")
         for w in self.warnings:
-            L.append(f"  ⚠ {w}")
+            L.append(f"  ! {w}")
         return "\n".join(L)
 
 

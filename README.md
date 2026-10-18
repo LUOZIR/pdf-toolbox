@@ -23,7 +23,20 @@
 4. **图层分离**：页眉页脚、页码、水印、印章钉死原位，永不参与重排 ——
    改字不会把印章顶飞。
 
-## 安装
+## 下载即用（推荐给不写代码的人）
+
+到本仓库的 **[Releases](../../releases)** 页下载 `PDF工具箱.exe`，双击运行即可 ——
+单文件、免安装、不需要 Python 环境。Windows 10/11 64 位，启动约 3 秒。
+
+> 未签名的单文件 exe 可能被杀毒软件拦一次，选择"仍要运行"即可。
+> 源码全部在本仓库，可以自行核对，也可以自己打包：
+> `python -m PyInstaller --clean pdfbox.spec`
+
+打包进去的东西：OCR 模型（15.6MB，扫描件功能靠它）、PySide6、PyMuPDF、
+以及转换用的 docx/xlsx/pptx 库。`Office → PDF` 需要本机装有 Office，
+没装时那条菜单会明确报错，不影响其它功能。
+
+## 从源码运行（开发者）
 
 ```bash
 python -m venv .venv

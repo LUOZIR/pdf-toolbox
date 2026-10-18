@@ -46,7 +46,25 @@ from .raster_typeset import (PatchCase, build_patch_case,
 from .editor import _normalize_input
 from .typeset import apply_typeset, plan_typeset
 
-CACHE_DIR = Path(__file__).resolve().parent.parent.parent / "out" / "ocr_cache"
+def _cache_root() -> Path:
+    """OCR 缓存放哪儿。
+
+    ★ 打包成 exe 后不能再用"源码目录下的 out/"：PyInstaller 单文件模式把
+      资源解到临时目录，`__file__` 指向那里 —— 缓存会写进临时目录
+      （启动后被删、且常常只读），等于每次启动都重新 OCR，
+      装到 Program Files 下还会直接失败。
+      所以冻结后改用用户可写的 %LOCALAPPDATA%；源码运行仍用 out/，
+      方便开发时直接看缓存。
+    """
+    import os
+    import sys
+    if getattr(sys, "frozen", False):
+        base = os.environ.get("LOCALAPPDATA") or os.environ.get("TEMP") or "."
+        return Path(base) / "pdf-toolbox"
+    return Path(__file__).resolve().parent.parent.parent / "out"
+
+
+CACHE_DIR = _cache_root() / "ocr_cache"
 UNDO_LIMIT = 30
 
 # 文档类型

@@ -79,7 +79,7 @@ def cmd_blocks(args) -> int:
         for i, b in enumerate(editable):
             tag = "固定" if b.layer == LAYER_FIXED else "流式"
             conf = f"{b.confidence:.2f}"
-            text = b.text.replace("\n", "⏎")
+            text = b.text.replace("\n", "[换行]")
             print(f"  #{i:<3} [{tag}][{b.kind:<9}] 置信 {conf}  "
                   f"y={b.bbox[1]:6.1f}  {b.size:5.1f}pt  {text[:56]}")
             if args.verbose:
@@ -219,11 +219,11 @@ def cmd_edit(args) -> int:
         return 3
 
     print()
-    print(f"✓ {rec.summary()}")
+    print(f"√ {rec.summary()}")
     if rec.method:
         print(f"    {rec.method}")
     for w in rec.warned:
-        print(f"    ⚠ {w}")
+        print(f"    ! {w}")
 
     out = Path(args.out) if args.out else s.path.with_name(
         s.path.stem + "_edited" + s.path.suffix)
@@ -271,7 +271,7 @@ def cmd_fonts(args) -> int:
             print(f"  {family:<18} → {', '.join(found)}")
     print(f"\n搜索目录：")
     for d in FONT_DIRS:
-        print(f"  {d}  {'✓' if Path(d).exists() else '✗ 不存在'}")
+        print(f"  {d}  {'√' if Path(d).exists() else '× 不存在'}")
     return 0
 
 
@@ -568,7 +568,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.set_defaults(func=cmd_compress)
 
     # ---------------------------------------------------------- 格式转换
-    sp = sub.add_parser("convert", help="格式转换 PDF↔Word/Excel/PPT/图片")
+    sp = sub.add_parser("convert", help="格式转换 PDF<->Word/Excel/PPT/图片")
     sp.add_argument("src", help="源文件（PDF / Office 文档 / 图片）")
     sp.add_argument("--to", help="目标格式：docx / xlsx / pptx / png / jpeg / pdf")
     sp.add_argument("--pages", metavar="SPEC", help="只处理指定页，如 1,3-5")

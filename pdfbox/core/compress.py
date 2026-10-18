@@ -165,7 +165,7 @@ class CompressReport:
                      f"{a.before_filter}/{a.before_cs} → "
                      f"{a.after_filter}/{a.after_cs}  {ps}  {tag}")
             if a.reason:
-                L.append(f"          ↳ {a.reason}")
+                L.append(f"          └ {a.reason}")
         if self.page_psnr:
             worst = min(self.page_psnr)
             L.append(f"  整页渲染对比：最差 PSNR {worst:.1f}dB"

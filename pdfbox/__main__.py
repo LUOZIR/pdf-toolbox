@@ -36,10 +36,10 @@ USAGE = """PDF 工具箱 —— 本地运行的 PDF 编辑器
   fonts     列出可用的系统字体
   pages     页面列表 / 删除 / 重排 / 旋转 / 提取 / 插入 / 合并
   compress  压缩文档（重点处理图像型 PDF）
-  convert   格式转换 PDF ↔ Word/Excel/PPT/图片
+  convert   格式转换 PDF 与 Word/Excel/PPT/图片 互转
 
 例：
-  python -m pdfbox --cli edit 合同.pdf --match "金额" --to "¥5000" -o 改后.pdf
+  python -m pdfbox --cli edit 合同.pdf --match "金额" --to "￥5000" -o 改后.pdf
   python -m pdfbox --cli pages 文件.pdf --delete 2,5-7 -o 输出.pdf
   python -m pdfbox --cli compress 扫描件.pdf --preset balanced
   python -m pdfbox --cli convert 文件.pdf --to docx --verify
@@ -48,7 +48,55 @@ USAGE = """PDF 工具箱 —— 本地运行的 PDF 编辑器
 """
 
 
+def _ensure_stdio() -> None:
+    """把标准输出/错误流准备好。
+
+    ★ 两个平台问题，都会让程序"看起来能跑、一输出就崩"：
+      1. Windows 控制台默认是 GBK(cp936)。本工具的输出里有中文标点与
+         箭头符号，其中一部分 GBK 编码不了 —— 实测 `python -m pdfbox --help`
+         在 cmd/PowerShell 下直接抛 UnicodeEncodeError（Git Bash 是 UTF-8
+         所以从没暴露过）。所以统一改成 UTF-8 并加 errors="replace"：
+         宁可个别字符显示成 `?`，也不能让帮助信息本身把程序打崩。
+      2. 打包成窗口模式 exe 后 sys.stdout/stderr 是 None。
+
+    ★ 两个后果，都要处理：
+      1. 从终端跑 `pdf-toolbox.exe --cli info 文件.pdf` 时看不到任何输出 ——
+         所以先尝试 AttachConsole 接回父进程的控制台；
+      2. 接不上时（双击启动）任何 print() 都会炸，所以给个丢弃用的兜底流。
+    """
+    for name in ("stdout", "stderr"):
+        f = getattr(sys, name, None)
+        if f is None:
+            continue
+        try:
+            f.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+    if sys.stdout is not None and sys.stderr is not None:
+        return
+    try:
+        import ctypes
+        if ctypes.windll.kernel32.AttachConsole(-1):      # ATTACH_PARENT_PROCESS
+            sys.stdout = open("CONOUT$", "w", encoding="utf-8",
+                              errors="replace", buffering=1)
+            sys.stderr = open("CONOUT$", "w", encoding="utf-8",
+                              errors="replace", buffering=1)
+            return
+    except Exception:
+        pass
+    try:
+        import os
+        null = open(os.devnull, "w", encoding="utf-8")
+    except Exception:
+        null = None
+    if sys.stdout is None:
+        sys.stdout = null
+    if sys.stderr is None:
+        sys.stderr = null
+
+
 def main() -> int:
+    _ensure_stdio()
     args = sys.argv[1:]
     if args and args[0] in ("-h", "--help", "help", "/?"):
         print(USAGE)
